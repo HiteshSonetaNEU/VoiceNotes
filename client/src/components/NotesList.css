@@ -1,0 +1,119 @@
+.notes-list-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+.notes-list-container h3 {
+  padding: 15px;
+  margin: 0;
+  background-color: #eaeaea;
+  border-bottom: 1px solid #ddd;
+  color: #333;
+}
+
+.notes-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.note-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.note-item:hover {
+  background-color: #f0f8ff;
+}
+
+.note-item.active {
+  background-color: #e6f2ff;
+  border-left: 4px solid #2196f3;
+}
+
+.note-item-content {
+  flex: 1;
+  overflow: hidden;
+}
+
+.note-item-title {
+  font-weight: 500;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.note-item-date {
+  font-size: 12px;
+  color: #777;
+}
+
+.note-item-actions {
+  display: flex;
+  gap: 8px;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.note-item:hover .note-item-actions {
+  opacity: 1;
+}
+
+.note-item-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  transition: background-color 0.2s;
+}
+
+.note-item-actions button:hover {
+  background-color: #e0e0e0;
+  color: #1976d2;
+}
+
+.note-item-actions button:last-child:hover {
+  color: #d32f2f;
+}
+
+.notes-list-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 20px;
+  text-align: center;
+  color: #888;
+}
+
+.notes-list-hint {
+  font-style: italic;
+  font-size: 14px;
+  margin-top: 10px;
+  max-width: 200px;
+}
+
+.notes-list-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #888;
+}

@@ -1,0 +1,129 @@
+import React, { useState, useEffect } from 'react';
+import './App.css';
+import VoiceRecorder from './components/VoiceRecorder';
+import NotesList from './components/NotesList';
+import NoteEditor from './components/NoteEditor';
+import axios from 'axios';
+
+const API_URL = 'http://localhost:5000/api/notes';
+
+function App() {
+  const [notes, setNotes] = useState([]);
+  const [currentNote, setCurrentNote] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  // Fetch all notes from the server
+  const fetchNotes = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(API_URL);
+      setNotes(response.data);
+      setError('');
+    } catch (err) {
+      setError('Failed to fetch notes');
+      console.error('Error fetching notes:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Create a new note
+  const createNote = async (noteData) => {
+    try {
+      setLoading(true);
+      const response = await axios.post(API_URL, noteData);
+      setNotes([response.data, ...notes]);
+      setCurrentNote(response.data);
+      setError('');
+    } catch (err) {
+      setError('Failed to create note');
+      console.error('Error creating note:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Update an existing note
+  const updateNote = async (id, noteData) => {
+    try {
+      setLoading(true);
+      const response = await axios.put(`${API_URL}/${id}`, noteData);
+      setNotes(notes.map(note => note._id === id ? response.data : note));
+      setCurrentNote(response.data);
+      setError('');
+    } catch (err) {
+      setError('Failed to update note');
+      console.error('Error updating note:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Delete a note
+  const deleteNote = async (id) => {
+    try {
+      setLoading(true);
+      await axios.delete(`${API_URL}/${id}`);
+      setNotes(notes.filter(note => note._id !== id));
+      if (currentNote && currentNote._id === id) {
+        setCurrentNote(null);
+      }
+      setError('');
+    } catch (err) {
+      setError('Failed to delete note');
+      console.error('Error deleting note:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle note selection
+  const selectNote = (note) => {
+    setCurrentNote(note);
+  };
+
+  // Create new note from voice
+  const handleVoiceInput = (transcript) => {
+    if (transcript) {
+      // Create a new note with the first few words as title and the full transcript as content
+      const title = transcript.split(' ').slice(0, 5).join(' ') + '...';
+      createNote({ title, content: transcript });
+    }
+  };
+
+  // Load notes when component mounts
+  useEffect(() => {
+    fetchNotes();
+  }, []);
+
+  return (
+    <div className="app">
+      <header className="app-header">
+        <h1>Voice Notes</h1>
+        {error && <div className="error-message">{error}</div>}
+      </header>
+      <main className="app-main">
+        <div className="sidebar">
+          <VoiceRecorder onResult={handleVoiceInput} />
+          <NotesList 
+            notes={notes} 
+            onSelect={selectNote} 
+            onDelete={deleteNote}
+            currentNote={currentNote}
+            loading={loading}
+          />
+        </div>
+        <div className="editor-container">
+          <NoteEditor 
+            note={currentNote}
+            onUpdate={updateNote}
+            onCreate={createNote}
+          />
+        </div>
+      </main>
+    </div>
+  );
+}
+
+export default App;
