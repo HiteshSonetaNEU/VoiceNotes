@@ -117,3 +117,22 @@
   height: 100%;
   color: #888;
 }
+
+.search-results-header {
+  padding: 8px 15px;
+  background-color: #e3f2fd;
+  color: #1976d2;
+  font-size: 14px;
+  border-bottom: 1px solid #bbdefb;
+}
+
+.hidden {
+  display: none;
+}
+
+.loading-indicator {
+  font-size: 14px;
+  color: #757575;
+  font-weight: normal;
+  margin-left: 10px;
+}

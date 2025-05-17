@@ -15,6 +15,7 @@
 
 .recorder-buttons {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   margin-top: 10px;
 }
@@ -42,6 +43,20 @@
 }
 
 .recorder-buttons .start-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.recorder-buttons .append-button {
+  background-color: #2196f3;
+  color: white;
+}
+
+.recorder-buttons .append-button:hover {
+  background-color: #1976d2;
+}
+
+.recorder-buttons .append-button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
 }

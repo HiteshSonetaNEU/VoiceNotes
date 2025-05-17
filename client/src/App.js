@@ -3,15 +3,18 @@ import './App.css';
 import VoiceRecorder from './components/VoiceRecorder';
 import NotesList from './components/NotesList';
 import NoteEditor from './components/NoteEditor';
+import SearchBar from './components/SearchBar';
 import axios from 'axios';
 
 const API_URL = 'http://localhost:5000/api/notes';
 
 function App() {
   const [notes, setNotes] = useState([]);
+  const [filteredNotes, setFilteredNotes] = useState([]);
   const [currentNote, setCurrentNote] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Fetch all notes from the server
   const fetchNotes = async () => {
@@ -81,33 +84,65 @@ function App() {
   // Handle note selection
   const selectNote = (note) => {
     setCurrentNote(note);
-  };
-
-  // Create new note from voice
+  };  // Create new note from voice
   const handleVoiceInput = (transcript) => {
     if (transcript) {
+      console.log("Creating new note with transcript:", transcript);
       // Create a new note with the first few words as title and the full transcript as content
       const title = transcript.split(' ').slice(0, 5).join(' ') + '...';
       createNote({ title, content: transcript });
+    } else {
+      console.log("No transcript available to create note");
     }
   };
-
+    // Append to existing note from voice
+  const handleVoiceAppend = (transcript) => {
+    if (transcript && currentNote) {
+      console.log("Appending new transcript:", transcript);
+      // Ensure we have a fresh transcript from the current recording session
+      const updatedContent = currentNote.content + '\n\n' + transcript;
+      updateNote(currentNote._id, { ...currentNote, content: updatedContent });
+    }
+  };
   // Load notes when component mounts
   useEffect(() => {
     fetchNotes();
   }, []);
+  
+  // Filter notes based on search term
+  useEffect(() => {
+    if (searchTerm.trim() === '') {
+      setFilteredNotes(notes);
+    } else {
+      const term = searchTerm.toLowerCase();
+      const filtered = notes.filter(note => 
+        note.title.toLowerCase().includes(term) || 
+        note.content.toLowerCase().includes(term)
+      );
+      setFilteredNotes(filtered);
+    }
+  }, [searchTerm, notes]);
+  
+  // Handle search
+  const handleSearch = (term) => {
+    setSearchTerm(term);
+  };
 
   return (
     <div className="app">
       <header className="app-header">
         <h1>Voice Notes</h1>
         {error && <div className="error-message">{error}</div>}
-      </header>
-      <main className="app-main">
+      </header>      <main className="app-main">
         <div className="sidebar">
-          <VoiceRecorder onResult={handleVoiceInput} />
+          <VoiceRecorder 
+            onResult={handleVoiceInput} 
+            onAppendResult={handleVoiceAppend}
+            isNoteSelected={currentNote !== null}
+          />
+          <SearchBar onSearch={handleSearch} />
           <NotesList 
-            notes={notes} 
+            notes={filteredNotes} 
             onSelect={selectNote} 
             onDelete={deleteNote}
             currentNote={currentNote}

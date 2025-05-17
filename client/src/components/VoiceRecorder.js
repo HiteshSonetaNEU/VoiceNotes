@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaMicrophone, FaStop, FaExclamationTriangle } from 'react-icons/fa';
+import { FaMicrophone, FaStop, FaExclamationTriangle, FaPlus } from 'react-icons/fa';
 import './VoiceRecorder.css';
 
-const VoiceRecorder = ({ onResult }) => {
+const VoiceRecorder = ({ onResult, isNoteSelected, onAppendResult }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [error, setError] = useState('');
@@ -45,31 +45,33 @@ const VoiceRecorder = ({ onResult }) => {
       }
     };
   }, []);
-
   const startRecording = () => {
     setError('');
     setTranscript('');
 
     if (recognitionRef.current) {
+      // Reset the onend handler to default behavior for creating a new note
+      recognitionRef.current.onend = () => {
+        setIsRecording(false);
+      };
+      
       recognitionRef.current.start();
       setIsRecording(true);
     } else {
       setError('Speech recognition is not available');
     }
-  };
-
-  const stopRecording = () => {
+  };const stopRecording = () => {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
       setIsRecording(false);
 
+      // Always create a new note when stopping recording unless we're in append mode
       if (transcript) {
+        // Create new note if this recording was started with the startRecording function
         onResult(transcript);
       }
     }
-  };
-
-  return (
+  };return (
     <div className="voice-recorder">
       <div className="recorder-controls">
         <h3>Voice Recording</h3>
@@ -81,14 +83,58 @@ const VoiceRecorder = ({ onResult }) => {
         )}
         <div className="recorder-buttons">
           {!isRecording ? (
-            <button 
-              onClick={startRecording} 
-              disabled={!!error} 
-              className="start-button"
-              title="Start recording"
-            >
-              <FaMicrophone /> Start Recording
-            </button>
+            <>
+              <button 
+                onClick={startRecording} 
+                disabled={!!error} 
+                className="start-button"
+                title="Start new recording"
+              >
+                <FaMicrophone /> {isNoteSelected ? "Record New" : "Start Recording"}
+              </button>              {isNoteSelected && (
+                <button 
+                  onClick={() => {
+                    setError('');
+                    setTranscript('');
+                    
+                    if (recognitionRef.current) {
+                      // Store the current transcript temporarily to be used in the onend handler
+                      let appendTranscript = '';
+                      
+                      // Override the onresult handler to capture new content
+                      const originalOnResult = recognitionRef.current.onresult;
+                      recognitionRef.current.onresult = (event) => {
+                        let currentTranscript = '';
+                        for (let i = 0; i < event.results.length; i++) {
+                          currentTranscript += event.results[i][0].transcript;
+                        }
+                        appendTranscript = currentTranscript;
+                        setTranscript(currentTranscript);
+                      };
+                      
+                      recognitionRef.current.onend = () => {
+                        // Restore original handler
+                        recognitionRef.current.onresult = originalOnResult;
+                        
+                        if (appendTranscript) {
+                          onAppendResult(appendTranscript);
+                        }
+                        setIsRecording(false);
+                      };
+                      recognitionRef.current.start();
+                      setIsRecording(true);
+                    } else {
+                      setError('Speech recognition is not available');
+                    }
+                  }}
+                  disabled={!!error} 
+                  className="append-button"
+                  title="Append to selected note"
+                >
+                  <FaPlus /> Append to Note
+                </button>
+              )}
+            </>
           ) : (
             <button 
               onClick={stopRecording} 
