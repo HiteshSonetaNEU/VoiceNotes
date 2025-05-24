@@ -3,6 +3,7 @@ import './App.css';
 import VoiceRecorder from './components/VoiceRecorder';
 import NotesList from './components/NotesList';
 import NoteEditor from './components/NoteEditor';
+import NotesOverview from './components/NotesOverview';
 import SearchBar from './components/SearchBar';
 import axios from 'axios';
 
@@ -15,6 +16,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentView, setCurrentView] = useState('editor'); // 'editor' or 'overview'
 
   // Fetch all notes from the server
   const fetchNotes = async () => {
@@ -124,40 +126,90 @@ function App() {
       setFilteredNotes(filtered);
     }
   }, [searchTerm, notes]);
-  
-  // Handle search
+    // Handle search
   const handleSearch = (term) => {
     setSearchTerm(term);
   };
 
+  // Navigation functions
+  const showOverview = () => {
+    setCurrentView('overview');
+  };
+
+  const showEditor = () => {
+    setCurrentView('editor');
+  };
+  // Handle note selection from overview
+  const handleOverviewNoteSelect = (note) => {
+    setCurrentNote(note);
+    setCurrentView('editor');
+  };
+
+  // Handle note update from overview (for moving topics, etc.)
+  const handleNoteUpdate = (noteId, updatedNote) => {
+    setNotes(notes.map(note => note._id === noteId ? updatedNote : note));
+    if (currentNote && currentNote._id === noteId) {
+      setCurrentNote(updatedNote);
+    }
+  };
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Voice Notes</h1>
+        <div className="header-content">
+          <h1>Voice Notes</h1>
+          <nav className="header-nav">
+            <button 
+              onClick={showEditor}
+              className={`nav-button ${currentView === 'editor' ? 'active' : ''}`}
+            >
+              Editor
+            </button>
+            <button 
+              onClick={showOverview}
+              className={`nav-button ${currentView === 'overview' ? 'active' : ''}`}
+            >
+              All Notes ({notes.length})
+            </button>
+          </nav>
+        </div>
         {error && <div className="error-message">{error}</div>}
-      </header>      <main className="app-main">
-        <div className="sidebar">
-          <VoiceRecorder 
-            onResult={handleVoiceInput} 
-            onAppendResult={handleVoiceAppend}
-            isNoteSelected={currentNote !== null}
+      </header>
+
+      <main className="app-main">
+        {currentView === 'editor' ? (
+          <>
+            <div className="sidebar">
+              <VoiceRecorder 
+                onResult={handleVoiceInput} 
+                onAppendResult={handleVoiceAppend}
+                isNoteSelected={currentNote !== null}
+              />
+              <SearchBar onSearch={handleSearch} />
+              <NotesList 
+                notes={filteredNotes} 
+                onSelect={selectNote} 
+                onDelete={deleteNote}
+                currentNote={currentNote}
+                loading={loading}
+              />
+            </div>
+            <div className="editor-container">
+              <NoteEditor 
+                note={currentNote}
+                onUpdate={updateNote}
+                onCreate={createNote}
+              />
+            </div>
+          </>        ) : (
+          <NotesOverview
+            notes={notes}
+            onSelectNote={handleOverviewNoteSelect}
+            onDeleteNote={deleteNote}
+            onBackToEditor={showEditor}
+            onCreateNote={createNote}
+            onUpdateNote={handleNoteUpdate}
           />
-          <SearchBar onSearch={handleSearch} />
-          <NotesList 
-            notes={filteredNotes} 
-            onSelect={selectNote} 
-            onDelete={deleteNote}
-            currentNote={currentNote}
-            loading={loading}
-          />
-        </div>
-        <div className="editor-container">
-          <NoteEditor 
-            note={currentNote}
-            onUpdate={updateNote}
-            onCreate={createNote}
-          />
-        </div>
+        )}
       </main>
     </div>
   );
