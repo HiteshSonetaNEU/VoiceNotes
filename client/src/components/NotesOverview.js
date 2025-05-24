@@ -312,15 +312,9 @@ const NotesOverview = ({ notes, onSelectNote, onDeleteNote, onBackToEditor, onCr
                         <FaTrash />
                       </button>
                     </div>
-                  </div>
-
-                  <div className="note-card-content">
-                    {note.contentType === 'rich' ? (
-                      <RichTextDisplay content={note.content} className="note-preview" />
-                    ) : (
-                      <p className="note-preview">{note.content}</p>
-                    )}
-                  </div>                  <div className="note-card-meta">
+                  </div>                  <div className="note-card-content">
+                    <RichTextDisplay content={note.content} className="note-preview" />
+                  </div><div className="note-card-meta">
                     <span className="note-date">
                       {new Date(note.updatedAt).toLocaleDateString()}
                     </span>
@@ -349,13 +343,8 @@ const NotesOverview = ({ notes, onSelectNote, onDeleteNote, onBackToEditor, onCr
                   ×
                 </button>
               </div>
-            </div>
-            <div className="modal-content">
-              {selectedNote.contentType === 'rich' ? (
-                <RichTextDisplay content={selectedNote.content} />
-              ) : (
-                <p>{selectedNote.content}</p>
-              )}
+            </div>            <div className="modal-content">
+              <RichTextDisplay content={selectedNote.content} />
             </div>
             <div className="modal-footer">
               <span>Last updated: {new Date(selectedNote.updatedAt).toLocaleString()}</span>

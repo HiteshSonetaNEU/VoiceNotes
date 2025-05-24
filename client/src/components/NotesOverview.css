@@ -276,19 +276,74 @@
   font-size: 14px;
   line-height: 1.5;
   margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.notes-content.grid .note-preview {
-  -webkit-line-clamp: 4;
+/* Rich text note preview with max height instead of line clamping */
+.rich-text-display.note-preview {
+  max-height: 4.5em; /* Approximately 3 lines */
+  position: relative;
 }
 
-.notes-content.list .note-preview {
-  -webkit-line-clamp: 2;
+.notes-content.grid .rich-text-display.note-preview {
+  max-height: 6em; /* Approximately 4 lines */
+}
+
+.notes-content.list .rich-text-display.note-preview {
+  max-height: 3em; /* Approximately 2 lines */
+}
+
+/* Ensure rich text elements in preview are properly styled */
+.rich-text-display.note-preview * {
+  font-size: inherit !important;
+  line-height: inherit !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.rich-text-display.note-preview p {
+  margin: 0 0 4px 0 !important;
+  display: inline;
+}
+
+.rich-text-display.note-preview p + p::before {
+  content: ' ';
+}
+
+.rich-text-display.note-preview strong,
+.rich-text-display.note-preview b {
+  font-weight: bold;
+}
+
+.rich-text-display.note-preview em,
+.rich-text-display.note-preview i {
+  font-style: italic;
+}
+
+.rich-text-display.note-preview h1,
+.rich-text-display.note-preview h2,
+.rich-text-display.note-preview h3 {
+  display: inline;
+  font-size: inherit !important;
+  font-weight: bold;
+}
+
+.rich-text-display.note-preview ul,
+.rich-text-display.note-preview ol {
+  display: inline;
+  list-style: none;
+}
+
+.rich-text-display.note-preview li {
+  display: inline;
+}
+
+.rich-text-display.note-preview li::after {
+  content: ', ';
+}
+
+.rich-text-display.note-preview li:last-child::after {
+  content: '';
 }
 
 .note-card-meta {
@@ -539,6 +594,43 @@
   margin-top: 20px;
 }
 
+/* Move Note Modal Styles */
+.move-note-info {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.move-note-info h4 {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.move-note-info p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.note-topic {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.topic-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #e9ecef;
+  color: #495057;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .notes-overview {
@@ -596,57 +688,4 @@
   .note-card-actions {
     align-self: flex-end;
   }
-}
-
-/* Rich text content styling in note preview */
-.note-preview .ql-editor {
-  padding: 0;
-  border: none;
-  font-size: inherit;
-  line-height: inherit;
-}
-
-.note-preview .ql-editor p {
-  margin: 0 0 8px 0;
-}
-
-/* Move Note Modal Styles */
-.move-note-info {
-  background: #f8f9fa;
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-}
-
-.move-note-info h4 {
-  margin: 0 0 8px 0;
-  color: #333;
-}
-
-.move-note-info p {
-  margin: 0;
-  color: #666;
-  font-size: 14px;
-}
-
-.note-topic {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.topic-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: #e9ecef;
-  color: #495057;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.note-preview .ql-editor p:last-child {
-  margin-bottom: 0;
 }
