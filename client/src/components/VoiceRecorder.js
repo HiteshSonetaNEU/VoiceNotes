@@ -6,6 +6,7 @@ const VoiceRecorder = ({ onResult, isNoteSelected, onAppendResult }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [error, setError] = useState('');
+  const [isAppendMode, setIsAppendMode] = useState(false);
   const recognitionRef = useRef(null);
   
   useEffect(() => {
@@ -44,11 +45,11 @@ const VoiceRecorder = ({ onResult, isNoteSelected, onAppendResult }) => {
         recognitionRef.current.stop();
       }
     };
-  }, []);
-  const startRecording = () => {
+  }, []);  const startRecording = () => {
     setError('');
     setTranscript('');
-
+    setIsAppendMode(false); // This is for new note creation
+    
     if (recognitionRef.current) {
       // Reset the onend handler to default behavior for creating a new note
       recognitionRef.current.onend = () => {
@@ -60,14 +61,13 @@ const VoiceRecorder = ({ onResult, isNoteSelected, onAppendResult }) => {
     } else {
       setError('Speech recognition is not available');
     }
-  };const stopRecording = () => {
+  };  const stopRecording = () => {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
       setIsRecording(false);
 
-      // Always create a new note when stopping recording unless we're in append mode
-      if (transcript) {
-        // Create new note if this recording was started with the startRecording function
+      // Only create a new note if we're NOT in append mode
+      if (transcript && !isAppendMode) {
         onResult(transcript);
       }
     }
@@ -96,6 +96,7 @@ const VoiceRecorder = ({ onResult, isNoteSelected, onAppendResult }) => {
                   onClick={() => {
                     setError('');
                     setTranscript('');
+                    setIsAppendMode(true); // Set append mode
                     
                     if (recognitionRef.current) {
                       // Store the current transcript temporarily to be used in the onend handler
@@ -120,6 +121,7 @@ const VoiceRecorder = ({ onResult, isNoteSelected, onAppendResult }) => {
                           onAppendResult(appendTranscript);
                         }
                         setIsRecording(false);
+                        setIsAppendMode(false); // Reset append mode
                       };
                       recognitionRef.current.start();
                       setIsRecording(true);

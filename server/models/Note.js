@@ -10,6 +10,11 @@ const NoteSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  contentType: {
+    type: String,
+    enum: ['plain', 'rich'],
+    default: 'plain'
+  },
   createdAt: {
     type: Date,
     default: Date.now

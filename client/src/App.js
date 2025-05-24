@@ -90,18 +90,20 @@ function App() {
       console.log("Creating new note with transcript:", transcript);
       // Create a new note with the first few words as title and the full transcript as content
       const title = transcript.split(' ').slice(0, 5).join(' ') + '...';
-      createNote({ title, content: transcript });
+      // Convert transcript to HTML paragraph for rich text
+      const richContent = `<p>${transcript}</p>`;
+      createNote({ title, content: richContent, contentType: 'rich' });
     } else {
       console.log("No transcript available to create note");
     }
-  };
-    // Append to existing note from voice
+  };    // Append to existing note from voice
   const handleVoiceAppend = (transcript) => {
     if (transcript && currentNote) {
       console.log("Appending new transcript:", transcript);
-      // Ensure we have a fresh transcript from the current recording session
-      const updatedContent = currentNote.content + '\n\n' + transcript;
-      updateNote(currentNote._id, { ...currentNote, content: updatedContent });
+      // Append transcript as a new paragraph in rich text format
+      const newParagraph = `<p>${transcript}</p>`;
+      const updatedContent = currentNote.content + newParagraph;
+      updateNote(currentNote._id, { ...currentNote, content: updatedContent, contentType: 'rich' });
     }
   };
   // Load notes when component mounts

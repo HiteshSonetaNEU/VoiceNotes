@@ -56,8 +56,7 @@ const NotesList = ({ notes, onSelect, onDelete, currentNote, loading }) => {
               key={note._id}
               className={`note-item ${currentNote && currentNote._id === note._id ? 'active' : ''}`}
               onClick={() => onSelect(note)}
-            >
-              <div className="note-item-content">
+            >              <div className="note-item-content">
                 <div className="note-item-title">{note.title}</div>
                 <div className="note-item-date">
                   {new Date(note.updatedAt).toLocaleDateString()}

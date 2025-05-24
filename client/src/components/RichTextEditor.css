@@ -1,0 +1,127 @@
+.rich-text-editor {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.rich-text-editor .ql-toolbar {
+  border: none;
+  border-bottom: 1px solid #e1e5e9;
+  background-color: #f8f9fa;
+  padding: 8px 12px;
+}
+
+.rich-text-editor .ql-container {
+  border: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.rich-text-editor .ql-editor {
+  min-height: 200px;
+  padding: 16px;
+  color: #333;
+}
+
+.rich-text-editor .ql-editor.ql-blank::before {
+  color: #999;
+  font-style: normal;
+}
+
+.rich-text-editor .ql-toolbar .ql-stroke {
+  fill: none;
+  stroke: #444;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.rich-text-editor .ql-toolbar .ql-fill {
+  fill: #444;
+  stroke: none;
+}
+
+.rich-text-editor .ql-toolbar button:hover .ql-stroke,
+.rich-text-editor .ql-toolbar button:focus .ql-stroke,
+.rich-text-editor .ql-toolbar button.ql-active .ql-stroke {
+  stroke: #0066cc;
+}
+
+.rich-text-editor .ql-toolbar button:hover .ql-fill,
+.rich-text-editor .ql-toolbar button:focus .ql-fill,
+.rich-text-editor .ql-toolbar button.ql-active .ql-fill {
+  fill: #0066cc;
+}
+
+/* Rich text display styles */
+.rich-text-display {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  line-height: 1.6;
+  color: #333;
+}
+
+.rich-text-display h1,
+.rich-text-display h2,
+.rich-text-display h3 {
+  margin: 16px 0 8px 0;
+  font-weight: 600;
+}
+
+.rich-text-display h1 {
+  font-size: 1.5em;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 4px;
+}
+
+.rich-text-display h2 {
+  font-size: 1.3em;
+}
+
+.rich-text-display h3 {
+  font-size: 1.1em;
+}
+
+.rich-text-display p {
+  margin: 8px 0;
+}
+
+.rich-text-display ul,
+.rich-text-display ol {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.rich-text-display blockquote {
+  border-left: 4px solid #ddd;
+  margin: 16px 0;
+  padding-left: 16px;
+  color: #666;
+  font-style: italic;
+}
+
+.rich-text-display code {
+  background-color: #f5f5f5;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.rich-text-display pre {
+  background-color: #f5f5f5;
+  padding: 12px;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+.rich-text-display a {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+.rich-text-display a:hover {
+  text-decoration: underline;
+}

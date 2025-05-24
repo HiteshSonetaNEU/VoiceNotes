@@ -89,3 +89,59 @@
 .save-button:hover {
   background-color: #3d8b40;
 }
+
+/* Content Type Toggle Styles */
+.content-type-toggle {
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.toggle-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #f5f5f5;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggle-button:hover {
+  background-color: #e0e0e0;
+  border-color: #bbb;
+}
+
+.toggle-button.active {
+  background-color: #2196f3;
+  color: white;
+  border-color: #2196f3;
+}
+
+.toggle-button.active:hover {
+  background-color: #1976d2;
+}
+
+/* Rich Text Editor Integration */
+.form-group .rich-text-editor {
+  flex: 1;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group .rich-text-editor .ql-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group .rich-text-editor .ql-editor {
+  flex: 1;
+  min-height: 250px;
+}
