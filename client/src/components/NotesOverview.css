@@ -129,19 +129,32 @@
   align-items: center;
   gap: 10px;
   margin-bottom: 15px;
-  padding-bottom: 10px;
+  padding: 10px;
   border-bottom: 2px solid #eee;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.group-header:hover {
+  background-color: #f8f9fa;
 }
 
 .group-header svg {
   color: #6c5ce7;
   font-size: 18px;
+  transition: transform 0.2s ease;
+}
+
+.group-header svg:first-child {
+  font-size: 14px;
+  color: #888;
 }
 
 .group-header h3 {
   margin: 0;
   color: #333;
   font-size: 18px;
+  user-select: none;
 }
 
 /* Grid View */

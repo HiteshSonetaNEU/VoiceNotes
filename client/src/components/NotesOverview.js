@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { FaFolder, FaFileAlt, FaSearch, FaEdit, FaTrash, FaTh, FaList, FaPlus, FaTags, FaFolderPlus, FaArrowRight, FaHashtag } from 'react-icons/fa';
+import { FaFolder, FaFileAlt, FaSearch, FaEdit, FaTrash, FaTh, FaList, FaPlus, FaTags, FaFolderPlus, FaArrowRight, FaHashtag, FaChevronDown, FaChevronRight } from 'react-icons/fa';
 import RichTextDisplay from './RichTextDisplay';
 import './NotesOverview.css';
 import axios from 'axios';
@@ -15,9 +15,9 @@ const NotesOverview = ({ notes, onSelectNote, onDeleteNote, onBackToEditor, onCr
   const [newTopicName, setNewTopicName] = useState('');
   const [selectedTopic, setSelectedTopic] = useState('');
   const [selectedNoteForMove, setSelectedNoteForMove] = useState(null);
-  const [moveToTopic, setMoveToTopic] = useState('');
-  const [availableTopics, setAvailableTopics] = useState([]);
-  const [createdTopics, setCreatedTopics] = useState(new Set()); // Track empty topics created  // Get topics from notes (using the topic field, not hashtags)
+  const [moveToTopic, setMoveToTopic] = useState('');  const [availableTopics, setAvailableTopics] = useState([]);
+  const [createdTopics, setCreatedTopics] = useState(new Set()); // Track empty topics created
+  const [collapsedTopics, setCollapsedTopics] = useState(new Set()); // Track collapsed topics// Get topics from notes (using the topic field, not hashtags)
   const allTopics = useMemo(() => {
     const topics = new Set();
     notes.forEach(note => {
@@ -28,11 +28,17 @@ const NotesOverview = ({ notes, onSelectNote, onDeleteNote, onBackToEditor, onCr
     createdTopics.forEach(topic => topics.add(topic));
     return Array.from(topics).sort();
   }, [notes, createdTopics]);
-
   // Update available topics when notes change
   useEffect(() => {
     setAvailableTopics(allTopics);
   }, [allTopics]);
+
+  // Collapse all topics by default when topics change
+  useEffect(() => {
+    if (groupBy === 'topic') {
+      setCollapsedTopics(new Set(allTopics));
+    }
+  }, [allTopics, groupBy]);
 
   // Group notes based on the selected grouping method
   const groupedNotes = useMemo(() => {
@@ -147,12 +153,32 @@ const NotesOverview = ({ notes, onSelectNote, onDeleteNote, onBackToEditor, onCr
       }
     }
   };
-
   const openMoveModal = (note, e) => {
     e.stopPropagation();
     setSelectedNoteForMove(note);
     setMoveToTopic(note.topic || 'General');
     setShowMoveModal(true);
+  };
+  const toggleTopicCollapse = (topicName) => {
+    setCollapsedTopics(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(topicName)) {
+        newSet.delete(topicName);
+      } else {
+        newSet.add(topicName);
+      }
+      return newSet;
+    });
+  };
+
+  const toggleAllTopics = () => {
+    if (collapsedTopics.size === allTopics.length) {
+      // All are collapsed, expand all
+      setCollapsedTopics(new Set());
+    } else {
+      // Some or none are collapsed, collapse all
+      setCollapsedTopics(new Set(allTopics));
+    }
   };
 
   return (
@@ -185,15 +211,26 @@ const NotesOverview = ({ notes, onSelectNote, onDeleteNote, onBackToEditor, onCr
               <option value="none">None</option>
               <option value="topic">Topic</option>
             </select>
-          </div>
-
-          <div className="topic-actions">            <button 
+          </div>          <div className="topic-actions">            <button 
               onClick={() => setShowTopicModal(true)}
               className="topic-button"
               title="Create new topic or add note to existing topic"
             >
               <FaPlus /> Create Topic
             </button>
+            {groupBy === 'topic' && allTopics.length > 0 && (
+              <button 
+                onClick={toggleAllTopics}
+                className="topic-button"
+                title={collapsedTopics.size === allTopics.length ? "Expand all topics" : "Collapse all topics"}
+              >
+                {collapsedTopics.size === allTopics.length ? (
+                  <><FaChevronDown /> Expand All</>
+                ) : (
+                  <><FaChevronRight /> Collapse All</>
+                )}
+              </button>
+            )}
           </div>
 
           <div className="view-controls">
@@ -218,19 +255,31 @@ const NotesOverview = ({ notes, onSelectNote, onDeleteNote, onBackToEditor, onCr
       <div className={`notes-content ${viewMode}`}>
         {Object.entries(groupedNotes).map(([groupName, groupNotes]) => (
           <div key={groupName} className="note-group">            {groupBy !== 'none' && (
-              <div className="group-header">
-                {groupBy === 'topic' ? <FaFolder /> : <FaFileAlt />}
+              <div 
+                className="group-header" 
+                onClick={() => groupBy === 'topic' && toggleTopicCollapse(groupName)}
+                style={{ cursor: groupBy === 'topic' ? 'pointer' : 'default' }}
+              >
+                {groupBy === 'topic' ? (
+                  <>
+                    {collapsedTopics.has(groupName) ? <FaChevronRight /> : <FaChevronDown />}
+                    <FaFolder />
+                  </>
+                ) : (
+                  <FaFileAlt />
+                )}
                 <h3>{groupName} ({groupNotes.length})</h3>
-              </div>
-            )}
+              </div>            )}
 
-            <div className={`notes-${viewMode}`}>
-              {groupNotes.map(note => (
-                <div 
-                  key={note._id} 
-                  className="note-card"
-                  onClick={() => handleNoteClick(note)}
-                >                  <div className="note-card-header">
+            {/* Only show notes if topic is not collapsed (or if groupBy is not 'topic') */}
+            {(groupBy !== 'topic' || !collapsedTopics.has(groupName)) && (
+              <div className={`notes-${viewMode}`}>
+                {groupNotes.map(note => (
+                  <div 
+                    key={note._id} 
+                    className="note-card"
+                    onClick={() => handleNoteClick(note)}
+                  ><div className="note-card-header">
                     <h4 className="note-card-title">{note.title}</h4>
                     <div className="note-card-actions">
                       <button 
@@ -280,10 +329,10 @@ const NotesOverview = ({ notes, onSelectNote, onDeleteNote, onBackToEditor, onCr
                         <FaFolder /> {note.topic || 'General'}
                       </span>
                     </div>
-                  </div>
-                </div>
+                  </div>                </div>
               ))}
-            </div>
+              </div>
+            )}
           </div>
         ))}
       </div>      {/* Note Detail Modal for Grid View */}
